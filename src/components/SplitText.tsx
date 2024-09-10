@@ -59,11 +59,30 @@ export const SplitText: FC<SplitTextProps> = forwardRef(function SplitText(
 ) {
   const [key, setKey] = useState(0);
 
-  const onResize = debounce(() => setKey(v => v + 1), 300);
+  // const onResize = debounce(() => setKey(v => v + 1), 300);
+
+  // useEffect(() => {
+  //   window.addEventListener('resize', onResize);
+  //   return () => window.removeEventListener('resize', onResize);
+  // }, []);
+
+   const [currentWidth, setCurrentWidth] = useState(
+    typeof window !== 'undefined' ? window.outerWidth : 0, // next.js builds fail without this window undefined check
+  );
+
+  const onResize = (e: any) => {
+    const newWidth = e.target.outerWidth;
+    if (newWidth !== currentWidth) {
+      setCurrentWidth(newWidth);
+    }
+  };
 
   useEffect(() => {
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    if (typeof window !== 'undefined') {
+      setCurrentWidth(window.outerWidth);
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }
   }, []);
 
   return (
